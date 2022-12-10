@@ -7,7 +7,7 @@ public class BallFormControl : MonoBehaviour
 {
 
     public SliderWithEcho ballPower;
-    public static float power;
+    public float power;
     public Dropdown ballDropDown;
     public GameObject golfball, basketball, bowlingBall;
     private Vector3 previousPosition;
@@ -23,7 +23,7 @@ public class BallFormControl : MonoBehaviour
     {
         downswingBool = false;
         swingButton.onClick.AddListener(swing);
-        power = 5;
+        power = 1000;
         SetPower(true);
         ballPower.SetSliderListener(powerValueChanged);
         ballDropDown.onValueChanged.AddListener(BallSelection);
@@ -130,7 +130,7 @@ public class BallFormControl : MonoBehaviour
         }
         void SetPower(bool v)
         {
-            ballPower.InitSliderRange(.5f, 10f, power);
+            ballPower.InitSliderRange(.5f, 100000f, power);
             
         }
         

@@ -6,28 +6,25 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class XformControl : MonoBehaviour {
-    public Toggle T, R, S, Axis;
+    
     public SliderWithEcho X, Y, Z;
     public Text ObjectName;
-
-    private Transform mSelected;
+    
+    public Transform mBaseNode;
+    public Transform mBodyNode;
     private Vector3 mPreviousSliderValues = Vector3.zero;
     private bool axisOn= false;
 
 	// Use this for initialization
 	void Start () {
-        T.onValueChanged.AddListener(SetToTranslation);
-        R.onValueChanged.AddListener(SetToRotation);
-        S.onValueChanged.AddListener(SetToScaling);
-        Axis.onValueChanged.AddListener(SetAxis);
+     
+       
         X.SetSliderListener(XValueChanged);
         Y.SetSliderListener(YValueChanged);
         Z.SetSliderListener(ZValueChanged);
-
-        T.isOn = true;
-        R.isOn = false;
-        S.isOn = false;
+        ObjectSetUI();
         SetToTranslation(true);
+        SetToRotation(true);
 	}
 	
     //---------------------------------------------------------------------------------
@@ -36,48 +33,21 @@ public class XformControl : MonoBehaviour {
     {
         Vector3 p = ReadObjectXfrom();
         mPreviousSliderValues = p;
-        X.InitSliderRange(-20, 20, p.x);
-        Y.InitSliderRange(-20, 20, p.y);
-        Z.InitSliderRange(-20, 20, p.z);
+        X.InitSliderRange(-.5f, .5f, p.x);
+        Z.InitSliderRange(-.5f, .5f, p.z);
     }
 
-    void SetToScaling(bool v)
-    {
-        Vector3 s = ReadObjectXfrom();
-        mPreviousSliderValues = s;
-        X.InitSliderRange(0.1f, 20, s.x);
-        Y.InitSliderRange(0.1f, 20, s.y);
-        Z.InitSliderRange(0.1f, 20, s.z);
-    }
+    
 
     void SetToRotation(bool v)
     {
         Vector3 r = ReadObjectXfrom();
         mPreviousSliderValues = r;
-        X.InitSliderRange(-180, 180, r.x);
         Y.InitSliderRange(-180, 180, r.y);
-        Z.InitSliderRange(-180, 180, r.z);
         mPreviousSliderValues = r;
     }
 
-    void SetAxis(bool v)
-    {
-        axisOn = v;
-        if (axisOn)
-        {
-            mSelected.GetChild(0).GetChild(2).GameObject().SetActive(true);
-            mSelected.GetChild(0).GetChild(3).GameObject().SetActive(true);
-            mSelected.GetChild(0).GetChild(4).GameObject().SetActive(true);
-        }
-        else
-        {
-            mSelected.GetChild(0).GetChild(2).GameObject().SetActive(false);
-            mSelected.GetChild(0).GetChild(3).GameObject().SetActive(false);
-            mSelected.GetChild(0).GetChild(4).GameObject().SetActive(false);
-        }
-    }
-    //---------------------------------------------------------------------------------
-
+    
     //---------------------------------------------------------------------------------
     // resopond to sldier bar value changes
     void XValueChanged(float v)
@@ -86,9 +56,8 @@ public class XformControl : MonoBehaviour {
         // if not in rotation, next two lines of work would be wasted
             float dx = v - mPreviousSliderValues.x;
             mPreviousSliderValues.x = v;
-            Quaternion q = Quaternion.AngleAxis(dx, Vector3.right);
         p.x = v;
-        UISetObjectXform(ref p, ref q);
+        mBodyNode.localPosition = p;
     }
     
     void YValueChanged(float v)
@@ -96,10 +65,9 @@ public class XformControl : MonoBehaviour {
         Vector3 p = ReadObjectXfrom();
             // if not in rotation, next two lines of work would be wasted
             float dy = v - mPreviousSliderValues.y;
-            mPreviousSliderValues.y = v;
+            
             Quaternion q = Quaternion.AngleAxis(dy, Vector3.up);
-        p.y = v;        
-        UISetObjectXform(ref p, ref q);
+            mBaseNode.localRotation = q;
     }
 
     void ZValueChanged(float v)
@@ -108,37 +76,11 @@ public class XformControl : MonoBehaviour {
             // if not in rotation, next two lines of work would be wasterd
             float dz = v - mPreviousSliderValues.z;
             mPreviousSliderValues.z = v;
-            Quaternion q = Quaternion.AngleAxis(dz, Vector3.forward);
         p.z = v;
-        UISetObjectXform(ref p, ref q);
+        mBodyNode.localPosition = p;
     }
     //---------------------------------------------------------------------------------
 
-    // new object selected
-    public void SetSelectedObject(Transform xform)
-    {
-        if (mSelected != null)
-        {
-            mSelected.GetChild(0).GetChild(2).GameObject().SetActive(false);
-            mSelected.GetChild(0).GetChild(3).GameObject().SetActive(false);
-            mSelected.GetChild(0).GetChild(4).GameObject().SetActive(false);
-        }
-
-        mSelected = xform;
-        mPreviousSliderValues = Vector3.zero;
-        if (xform != null)
-            ObjectName.text = "Selected:" + xform.name;
-        else
-            ObjectName.text = "Selected: none";
-        ObjectSetUI();
-
-        if (axisOn && mSelected != null)
-        {
-            mSelected.GetChild(0).GetChild(2).GameObject().SetActive(true);
-            mSelected.GetChild(0).GetChild(3).GameObject().SetActive(true);
-            mSelected.GetChild(0).GetChild(4).GameObject().SetActive(true);
-        }
-    }
 
     public void ObjectSetUI()
     {
@@ -150,46 +92,9 @@ public class XformControl : MonoBehaviour {
 
     private Vector3 ReadObjectXfrom()
     {
-        Vector3 p;
-        
-        if (T.isOn)
-        {
-            if (mSelected != null)
-                p = mSelected.localPosition;
-            else
-                p = Vector3.zero;
-        }
-        else if (S.isOn)
-        {
-            if (mSelected != null)
-                p = mSelected.localScale;
-            else
-                p = Vector3.one;
-        }
-        else
-        {
-            p = Vector3.zero;
-        }
-        return p;
+        return mBodyNode.localPosition;
     }
 
-    private void UISetObjectXform(ref Vector3 p, ref Quaternion q)
-    {
-        if (mSelected == null)
-            return;
-
-        if (T.isOn)
-        {
-            mSelected.localPosition = p;
-        }
-        else if (S.isOn)
-        {
-            mSelected.localScale = p;
-        } else
-        {
-            mSelected.localRotation *= q;
-        }
-    }
 
     public void RestartGame()
     {
