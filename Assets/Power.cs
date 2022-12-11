@@ -9,18 +9,23 @@ public class Power : MonoBehaviour
 {
     private float power;
     private Vector3 club;
+    public GameObject Xformcontrol;
+    public GameObject clubHead;
     public GameObject ballformControl;
-    public Vector3 direction = new Vector3(.1f,.1f,.45f);
+    private Vector3 direction;
     private int counter=1;
     private bool collided = false;
     private Vector3 velocity = Vector3.zero;
     // Start is called before the first frame update
     void Start()
     {
+      direction = new Vector3(0,.5f,.5f);
+
     }
 
     public void Launch()
     {
+        
         velocity = power * direction;
         GetComponent<Rigidbody>().velocity = velocity;
         ballformControl.GetComponent<BallFormControl>().launchPermision = false;
@@ -29,22 +34,25 @@ public class Power : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        directionRotation();
+
         power = ballformControl.GetComponent<BallFormControl>().power;
         club = ballformControl.GetComponent<BallFormControl>().clubVector;
         inRange();
     }
 
-    void Contact()
+    void directionRotation()
     {
         
+        direction = Xformcontrol.GetComponent<XformControl>().normal;
+        // Debug.Log(clubHead.transform.localPosition.normalized);
     }
 
     void inRange()
     {
-        if (Math.Abs(this.transform.localPosition.x - club.x)<.5 && Math.Abs(this.transform.localPosition.y - club.y)<.5 && Math.Abs(this.transform.localPosition.z - club.z)<.5
+        if (Math.Abs(this.transform.localPosition.x - club.x)<.35 && Math.Abs(this.transform.localPosition.y - club.y)<.35 && Math.Abs(this.transform.localPosition.z - club.z)<.35
             && ballformControl.GetComponent<BallFormControl>().launchPermision)
         {
-            Debug.Log("Fs");
             Launch();
         }
        

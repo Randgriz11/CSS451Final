@@ -14,11 +14,15 @@ public class XformControl : MonoBehaviour {
     public Transform mBodyNode;
     private Vector3 mPreviousSliderValues = Vector3.zero;
     private bool axisOn= false;
+    public GameObject normalObject;
+    public Quaternion ballRotation;
 
+    public Vector3 normal;
 	// Use this for initialization
-	void Start () {
-     
-       
+	void Start ()
+    {
+
+        ballRotation = Quaternion.identity;
         X.SetSliderListener(XValueChanged);
         Y.SetSliderListener(YValueChanged);
         Z.SetSliderListener(ZValueChanged);
@@ -67,7 +71,11 @@ public class XformControl : MonoBehaviour {
             float dy = v - mPreviousSliderValues.y;
             
             Quaternion q = Quaternion.AngleAxis(dy, Vector3.up);
+            ballRotation = q;
             mBaseNode.localRotation = q;
+            normalObject.transform.localRotation = q;
+            normal = normalObject.transform.forward.normalized + new Vector3(0,Random.Range(.2f,.5f));
+            
     }
 
     void ZValueChanged(float v)
