@@ -16,6 +16,6 @@ public class ViewPortLookOut : MonoBehaviour
     }
     void LateUpdate()
     {
-        theCamera.transform.position = target.transform.position + new Vector3(0,0,-5) ;
+        theCamera.transform.position = target.transform.position + new Vector3(0,2.5f,-5) ;
     }
 }

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NodePrimitive: MonoBehaviour {
+public class NodePrimitive: MonoBehaviour
+{
+    public Matrix4x4 clubNode;
     public Color MyColor = new Color(0.1f, 0.1f, 0.2f, 1.0f);
     public Vector3 Pivot;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
     }
 
     void Update()
@@ -15,7 +17,7 @@ public class NodePrimitive: MonoBehaviour {
     }
 	
   
-	public void LoadShaderMatrix(ref Matrix4x4 nodeMatrix)
+    public void LoadShaderMatrix(ref Matrix4x4 nodeMatrix)
     {
         Matrix4x4 p = Matrix4x4.TRS(Pivot, Quaternion.identity, Vector3.one);
         Matrix4x4 invp = Matrix4x4.TRS(-Pivot, Quaternion.identity, Vector3.one);
@@ -23,5 +25,9 @@ public class NodePrimitive: MonoBehaviour {
         Matrix4x4 m = nodeMatrix * p * trs * invp;
         GetComponent<Renderer>().material.SetMatrix("MyXformMat", m);
         GetComponent<Renderer>().material.SetColor("MyColor", MyColor);
+        if (name == "Club")
+        {
+            clubNode = GetComponent<Renderer>().material.GetMatrix("MyXformMat");
+        }
     }
 }

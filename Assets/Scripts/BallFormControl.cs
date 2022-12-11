@@ -18,12 +18,16 @@ public class BallFormControl : MonoBehaviour
     public GameObject clubHead;
     private bool downswingBool;
     private bool upSwingBool;
+    private Matrix4x4 clubPos;
+    public bool launchPermision;
+    public Vector3 clubVector;
     // Start is called before the first frame update
     void Start()
     {
+        launchPermision = false;
         downswingBool = false;
         swingButton.onClick.AddListener(swing);
-        power = 1000;
+        power = 50;
         SetPower(true);
         ballPower.SetSliderListener(powerValueChanged);
         ballDropDown.onValueChanged.AddListener(BallSelection);
@@ -35,7 +39,7 @@ public class BallFormControl : MonoBehaviour
         {
             downSing();
             contact();
-            
+            setClubPos();
         }
 
         public void contact()
@@ -47,8 +51,12 @@ public class BallFormControl : MonoBehaviour
 
            
         }
-        
-        
+
+        public void setClubPos()
+        {
+            clubPos = clubHead.GetComponent<NodePrimitive>().clubNode;
+            clubVector = new Vector3(clubPos[0, 3], clubPos[1, 3], clubPos[2, 3]);
+        }
 
         public void downSing()
         {
@@ -74,6 +82,11 @@ public class BallFormControl : MonoBehaviour
                 //Vector3 q = new Vector3(v, 0, 0);
                 arms.transform.localRotation = q;
                 v -= 90f * Time.smoothDeltaTime;
+                if (v <= 0)
+                {
+                    Debug.Log(launchPermision);
+                    launchPermision = true;
+                }
                 if (v <= -90)
                 {
                     downswingBool = false;
@@ -130,7 +143,7 @@ public class BallFormControl : MonoBehaviour
         }
         void SetPower(bool v)
         {
-            ballPower.InitSliderRange(.5f, 100000f, power);
+            ballPower.InitSliderRange(.5f, 100f, power);
             
         }
         
