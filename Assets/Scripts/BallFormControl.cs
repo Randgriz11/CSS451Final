@@ -21,6 +21,12 @@ public class BallFormControl : MonoBehaviour
     private Matrix4x4 clubPos;
     public bool launchPermision;
     public Vector3 clubVector;
+
+    public GameObject BasketCamera;
+
+    public GameObject GolfCamera;
+
+    public GameObject BowlingCamera;
     // Start is called before the first frame update
     void Start()
     {
@@ -84,7 +90,6 @@ public class BallFormControl : MonoBehaviour
                 v -= 90f * Time.smoothDeltaTime;
                 if (v <= 0)
                 {
-                    Debug.Log(launchPermision);
                     launchPermision = true;
                 }
                 if (v <= -90)
@@ -93,6 +98,7 @@ public class BallFormControl : MonoBehaviour
                      arms.localRotation = Quaternion.identity;
                      v = 0;
                      ourCanvas.interactable = true;
+                     launchPermision = false;
                 }
             }
         }
@@ -113,8 +119,13 @@ public class BallFormControl : MonoBehaviour
                 case 1:
                     basketball.SetActive(false);
                     bowlingBall.SetActive(false);
+                    BasketCamera.SetActive(false);
+                    BowlingCamera.SetActive(false);
+                    GolfCamera.SetActive(true);
                     golfball.SetActive(true);
                     golfball.transform.localPosition = previousPosition + new Vector3(0f,-.35f,0f);
+                    golfball.GetComponent<Rigidbody>().velocity = Vector3.zero;
+
                     index = 0;
                     break;
                     
@@ -122,16 +133,26 @@ public class BallFormControl : MonoBehaviour
                     
                     bowlingBall.SetActive(false);
                     golfball.SetActive(false);
+                    BowlingCamera.SetActive(false);
+                    GolfCamera.SetActive(false);
+                    BasketCamera.SetActive(true);
                     basketball.SetActive(true);
-                    golfball.transform.localPosition = previousPosition;
+                    basketball.transform.localPosition = previousPosition;
+                    basketball.GetComponent<Rigidbody>().velocity = Vector3.zero;
+
                     index = 0;
                     break;
                 case 3:
                    
                     golfball.SetActive(false);
+                    GolfCamera.SetActive(false);
                     basketball.SetActive(false);
+                    BasketCamera.SetActive(false);
+                    BowlingCamera.SetActive(true);
                     bowlingBall.SetActive(true);
-                    golfball.transform.localPosition = previousPosition;
+                    bowlingBall.transform.localPosition = previousPosition;
+                    bowlingBall.GetComponent<Rigidbody>().velocity = Vector3.zero;
+
                     index = 0;
                     break;
             }

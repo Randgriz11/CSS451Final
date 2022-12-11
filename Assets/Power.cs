@@ -16,6 +16,11 @@ public class Power : MonoBehaviour
     private int counter=1;
     private bool collided = false;
     private Vector3 velocity = Vector3.zero;
+
+    public GameObject basket;
+    public GameObject bowl;
+    public GameObject golf;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -50,13 +55,38 @@ public class Power : MonoBehaviour
 
     void inRange()
     {
-        if (Math.Abs(this.transform.localPosition.x - club.x)<.35 && Math.Abs(this.transform.localPosition.y - club.y)<.35 && Math.Abs(this.transform.localPosition.z - club.z)<.35
-            && ballformControl.GetComponent<BallFormControl>().launchPermision)
+        if (golf.activeSelf == true)
         {
-            Launch();
+            if (Math.Abs(this.transform.localPosition.x - club.x) < .35 &&
+                Math.Abs(this.transform.localPosition.y - club.y) < .35 &&
+                Math.Abs(this.transform.localPosition.z - club.z) < .35
+                && ballformControl.GetComponent<BallFormControl>().launchPermision)
+            {
+                Launch();
+            }
         }
-       
-        
+        if (bowl.activeSelf == true)
+        {
+            if (Math.Abs(this.transform.localPosition.x - club.x) < .75 &&
+                Math.Abs(this.transform.localPosition.y - club.y) < .75 &&
+                Math.Abs(this.transform.localPosition.z - club.z) < .75
+                && ballformControl.GetComponent<BallFormControl>().launchPermision)
+            {
+                Launch();
+            }
+        }
+        if (basket.activeSelf == true)
+        {
+            if (Math.Abs(this.transform.localPosition.x - club.x) < .75 &&
+                Math.Abs(this.transform.localPosition.y - club.y) < .75 &&
+                Math.Abs(this.transform.localPosition.z - club.z) < .75
+                && ballformControl.GetComponent<BallFormControl>().launchPermision)
+            {
+                Launch();
+            }
+        }
+
+
     }
     
     
