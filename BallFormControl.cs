@@ -7,7 +7,7 @@ public class BallFormControl : MonoBehaviour
 {
 
     public SliderWithEcho ballPower;
-    public static float power;
+    public float power;
     public Dropdown ballDropDown;
     public GameObject golfball, basketball, bowlingBall;
     private Vector3 previousPosition;
@@ -17,14 +17,15 @@ public class BallFormControl : MonoBehaviour
     public CanvasGroup ourCanvas;
     public GameObject clubHead;
     private bool downswingBool;
-
     private bool upSwingBool;
+    private Matrix4x4 clubPos;
+    public Vector3 clubVector;
     // Start is called before the first frame update
     void Start()
     {
         downswingBool = false;
         swingButton.onClick.AddListener(swing);
-        power = 5;
+        power = 1000;
         SetPower(true);
         ballPower.SetSliderListener(powerValueChanged);
         ballDropDown.onValueChanged.AddListener(BallSelection);
@@ -36,18 +37,24 @@ public class BallFormControl : MonoBehaviour
         {
             downSing();
             contact();
-            
+            setClubPos();
         }
 
         public void contact()
         {
-            if (clubHead.transform.localPosition == golfball.transform.localPosition)
-            {
-                Debug.Log("Woosh");
-            }
+            // if (clubHead.transform.localPosition == golfball.transform.localPosition)
+            // {
+            //     Debug.Log("Woosh");
+            // }
+
+           
         }
-        
-        
+
+        public void setClubPos()
+        {
+            clubPos = clubHead.GetComponent<NodePrimitive>().clubNode;
+            clubVector = new Vector3(clubPos[0, 3], clubPos[1, 3], clubPos[2, 3]);
+        }
 
         public void downSing()
         {
@@ -55,8 +62,7 @@ public class BallFormControl : MonoBehaviour
             if (upSwingBool == true)
             {
                 ourCanvas.interactable = false;
-                //Quaternion q = new Quaternion(0, 0f, 0f,0);
-                //Vector3 q = new Vector3(v, 0, 0);
+                
                 Quaternion q = Quaternion.AngleAxis(v, Vector3.right);
                 arms.transform.localRotation = q;
                 v += 90f * Time.smoothDeltaTime;
@@ -74,7 +80,7 @@ public class BallFormControl : MonoBehaviour
                 //Vector3 q = new Vector3(v, 0, 0);
                 arms.transform.localRotation = q;
                 v -= 90f * Time.smoothDeltaTime;
-                if (v <= -10)
+                if (v <= -90)
                 {
                     downswingBool = false;
                      arms.localRotation = Quaternion.identity;
@@ -130,7 +136,7 @@ public class BallFormControl : MonoBehaviour
         }
         void SetPower(bool v)
         {
-            ballPower.InitSliderRange(.5f, 10f, power);
+            ballPower.InitSliderRange(.5f, 100000f, power);
             
         }
         
